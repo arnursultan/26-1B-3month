@@ -1,4 +1,4 @@
-# Клж #1
+# Код #1
 # import sys
 # from PyQt6.QtWidgets import QApplication, QWidget, QLabel
 #
