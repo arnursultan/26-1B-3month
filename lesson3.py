@@ -1,3 +1,184 @@
+# from PyQt6.QtWidgets import QApplication, QWidget, QPushButton
+# import sys
+#
+# class MyWindow(QWidget):
+#     def __init__(self):
+#         super().__init__()
+#         self.setup_ui()
+#
+#     def setup_ui(self):
+#         self.setWindowTitle("Пример QPushButton")
+#         self.resize(300, 200)
+#
+#         button = QPushButton("Нажми меня", self)
+#         button.move(100, 80)
+#
+#         button.clicked.connect(self.button_clicked)
+#
+#     def button_clicked(self):
+#         print("Кнопка нажата!")
+#
+# app = QApplication(sys.argv)
+# window = MyWindow()
+# window.show()
+# sys.exit(app.exec())
+
+# from PyQt6.QtWidgets import QApplication, QWidget, QLineEdit, QPushButton
+# import sys
+#
+# class MyWindow(QWidget):
+#     def __init__(self):
+#         super().__init__()
+#         self.setup_ui()
+#
+#     def setup_ui(self):
+#         self.setWindowTitle("Пример QLineEdit")
+#         self.resize(300, 150)
+#
+#         self.text_input = QLineEdit(self)
+#         self.text_input.move(50, 50)
+#
+#         button = QPushButton("Показать текст", self)
+#         button.move(50, 90)
+#         button.clicked.connect(self.show_text)
+#
+#     def show_text(self):
+#         text = self.text_input.text()
+#         print(f"Ввёденный текст: {text}")
+#
+# app = QApplication(sys.argv)
+# window = MyWindow()
+# window.show()
+# sys.exit(app.exec())
+
+# from PyQt6.QtWidgets import QApplication, QWidget, QTextEdit, QPushButton
+# import sys
+#
+# class MyWindow(QWidget):
+#     def __init__(self):
+#         super().__init__()
+#         self.setup_ui()
+#
+#     def setup_ui(self):
+#         self.setWindowTitle("Пример QTextEdit")
+#         self.resize(300, 200)
+#
+#         self.text_edit = QTextEdit(self)
+#         self.text_edit.setGeometry(50, 30, 200, 100)
+#
+#         button = QPushButton("Показать текст", self)
+#         button.move(100, 140)
+#         button.clicked.connect(self.show_text)
+#
+#     def show_text(self):
+#         text = self.text_edit.toPlainText()
+#         print(f"Ввёденный текст:\n{text}")
+#
+# app = QApplication(sys.argv)
+# window = MyWindow()
+# window.show()
+# sys.exit(app.exec())
+
+# from PyQt6.QtWidgets import QApplication, QWidget, QComboBox, QLabel
+# import sys
+#
+# class MyWindow(QWidget):
+#     def __init__(self):
+#         super().__init__()
+#         self.setup_ui()
+#
+#     def setup_ui(self):
+#         self.setWindowTitle("Пример QComboBox")
+#         self.resize(300, 150)
+#
+#         self.combo = QComboBox(self)
+#         self.combo.addItems(["Python", "Java", "C++", "JavaScript"])
+#         self.combo.move(50, 50)
+#
+#         self.label = QLabel("Выберите язык", self)
+#         self.label.move(50, 90)
+#
+#         self.combo.currentIndexChanged.connect(self.update_label)
+#
+#     def update_label(self):
+#         self.label.setText(f"Вы выбрали: {self.combo.currentText()}")
+#         self.label.adjustSize()
+#
+# app = QApplication(sys.argv)
+# window = MyWindow()
+# window.show()
+# sys.exit(app.exec())
+
+# from PyQt6.QtWidgets import QApplication, QWidget, QCheckBox, QLabel
+# import sys
+#
+# class MyWindow(QWidget):
+#     def __init__(self):
+#         super().__init__()
+#         self.setup_ui()
+#
+#     def setup_ui(self):
+#         self.setWindowTitle("Пример QCheckBox")
+#         self.resize(300, 150)
+#
+#         self.checkbox = QCheckBox("Согласен с условиями", self)
+#         self.checkbox.move(50, 50)
+#
+#         self.label = QLabel("",self)
+#         self.label.move(50, 90)
+#
+#         self.checkbox.stateChanged.connect(self.update_label)
+#
+#     def update_label(self, state):
+#         if state == 2:
+#             self.label.setText("Вы согласились!")
+#         else:
+#             self.label.setText("")
+#
+#         self.label.adjustSize()
+#
+# app = QApplication(sys.argv)
+# window = MyWindow()
+# window.show()
+# sys.exit(app.exec())
+
+# from PyQt6.QtWidgets import QApplication, QWidget, QRadioButton, QLabel
+# import sys
+#
+# class MyWindow(QWidget):
+#     def __init__(self):
+#         super().__init__()
+#         self.setup_ui()
+#
+#     def setup_ui(self):
+#         self.setWindowTitle("Пример QRadioButton")
+#         self.resize(300, 150)
+#
+#         self.radio1 = QRadioButton("Вариант 1", self)
+#         self.radio1.move(50, 50)
+#
+#         self.radio2 = QRadioButton("Вариант 2", self)
+#         self.radio2.move(50, 80)
+#
+#         self.label = QLabel("Выберите вариант", self)
+#         self.label.move(50, 120)
+#
+#         self.radio1.toggled.connect(self.update_label)
+#         self.radio2.toggled.connect(self.update_label)
+#
+#     def update_label(self):
+#         if self.radio1.isChecked():
+#             self.label.setText("Вы выбрали вариант 1")
+#         elif self.radio2.isChecked():
+#             self.label.setText("Вы выбрали вариант 2")
+#
+#         self.label.adjustSize()
+#
+# app = QApplication(sys.argv)
+# window = MyWindow()
+# window.show()
+# sys.exit(app.exec())
+
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton, QLabel
 )
