@@ -43,3 +43,14 @@ def delete_contact(contact_id):
     cursor.execute("DELETE FROM contacts WHERE id = ?", (contact_id,))
     conn.commit()
     conn.close()
+
+def update_contact(contact_id, name, phone, email):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE contacts
+        SET name = ?, phone = ?, email = ?
+        WHERE id = ?
+    """, (name, phone, email, contact_id))
+    conn.commit()
+    conn.close()
