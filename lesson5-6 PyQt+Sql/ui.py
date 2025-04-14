@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton,
-    QTableWidget, QTableWidgetItem, QHBoxLayout, QMessageBox
+    QTableWidget, QTableWidgetItem, QHBoxLayout, QMessageBox, QAbstractItemView
 )
 from PyQt6.QtCore import Qt
 import json
@@ -69,6 +69,10 @@ class ContactApp(QWidget):
 
         self.setLayout(self.layout)
         self.load_contacts()
+
+        self.message_btn = QPushButton("Сообщения контакта")
+        self.message_btn.clicked.connect(self.open_messages_windows)
+        self.layout.addWidget(self.message_btn)
 
         self.shutdown_btn = QPushButton("Остановить сервер")
         self.shutdown_btn.clicked.connect(self.shutdown_server)
@@ -178,3 +182,69 @@ class ContactApp(QWidget):
             QMessageBox.information(self, "Сервер остановлен", "Сервер был успешно остановлен.")
         else:
             QMessageBox.critical(self, "Ошибка", f"Не удалось остановить сервер:\n{response}")
+
+    def open_messages_windows(self):
+        selected_row = self.contacts_table.currentRow()
+        if selected_row < 0:
+            QMessageBox.warning(self, "Нет контакта", "Пожалуйста, выберите контакт из таблицы.")
+            return
+
+        contact_id_item = self.contacts_table.item(selected_row, 0)
+        contact_name_item = self.contacts_table.item(selected_row, 1)
+
+        if not contact_id_item or not contact_name_item:
+            QMessageBox.warning(self, "Ошибка", "Не удалось получить данные контакта.")
+            return
+
+        contact_id = int(contact_id_item.text())
+        contact_name = contact_name_item.text()
+
+        self.message_window = MessageWindow(contact_id, contact_name)
+        self.message_window.show()
+
+class MessageWindow(QWidget):
+    def __init__(self, contact_id, contact_name):
+        super().__init__()
+        self.contact_id = contact_id
+        self.setWindowTitle(f"Сообщения: {contact_name}")
+        self.setGeometry(150, 150, 400, 300)
+
+        self.layout = QVBoxLayout(self)
+        self.message_input = QLineEdit(self)
+        self.message_input.setPlaceholderText("Введите сообщение...")
+
+        self.send_btn = QPushButton("Отправить")
+        self.send_btn.clicked.connect(self.send_message)
+
+        self.messages_list = QTableWidget()
+        self.messages_list.setColumnCount(2)
+        self.messages_list.setHorizontalHeaderLabels(["Сообщение", "Время"])
+        self.messages_list.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+
+        self.layout.addWidget(QLabel(f"Сообщения для ID {contact_id}:"))
+        self.layout.addWidget(self.messages_list)
+        self.layout.addWidget(self.message_input)
+        self.layout.addWidget(self.send_btn)
+
+        self.setLayout(self.layout)
+        self.load_messages()
+
+    def load_messages(self):
+        response = client_socket.send_command(f"get_messages|{self.contact_id}")
+        try:
+            messages = json.loads(response)
+            self.messages_list.setRowCount(0)
+            for msg_text, timestamp in messages:
+                row = self.messages_list.rowCount()
+                self.messages_list.insertRow(row)
+                self.messages_list.setItem(row, 0, QTableWidgetItem(msg_text))
+                self.messages_list.setItem(row, 1, QTableWidgetItem(timestamp))
+        except Exception as e:
+            QMessageBox.critical(self, "Ошибка", str(e))
+
+    def send_message(self):
+        text = self.message_input.text()
+        if text:
+            client_socket.send_command(f"add_message|{self.contact_id}|{text}")
+            self.load_messages()
+            self.message_input.clear()

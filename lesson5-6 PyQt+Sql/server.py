@@ -8,45 +8,60 @@ HOST = '127.0.0.1'
 PORT = 65432
 
 def handle_client(conn, addr):
-    data = conn.recv(4096).decode()
-    if not data:
-        return
-    parts = data.strip().split('|')
+    try:
+        data = conn.recv(4096).decode()
+        if not data:
+            return
+        parts = data.strip().split('|')
 
-    if parts[0] == "add":
-        name, phone, email = parts[1], parts[2], parts[3]
-        database.add_contact(name, phone, email)
-        conn.sendall("OK".encode())
+        if parts[0] == "add":
+            name, phone, email = parts[1], parts[2], parts[3]
+            database.add_contact(name, phone, email)
+            conn.sendall("OK".encode())
 
-    elif parts[0] == "get_all":
-        contacts = database.get_all_contacts()
-        conn.sendall(json.dumps(contacts).encode())
+        elif parts[0] == "get_all":
+            contacts = database.get_all_contacts()
+            conn.sendall(json.dumps(contacts).encode())
 
-    elif parts[0] == "delete":
-        contact_id = int(parts[1])
-        database.delete_contact(contact_id)
-        conn.sendall("OK".encode())
+        elif parts[0] == "delete":
+            contact_id = int(parts[1])
+            database.delete_contact(contact_id)
+            conn.sendall("OK".encode())
 
-    elif parts[0] == "search":
-        name = parts[1]
-        results = database.search_contacts(name)
-        conn.sendall(json.dumps(results).encode())
+        elif parts[0] == "search":
+            name = parts[1]
+            results = database.search_contacts(name)
+            conn.sendall(json.dumps(results).encode())
 
-    elif parts[0] == "update":
-        contact_id, name, phone, email = int(parts[1]), parts[2], parts[3], parts[4]
-        database.update_contact(contact_id, name, phone, email)
-        conn.sendall("OK".encode())
+        elif parts[0] == "update":
+            contact_id, name, phone, email = int(parts[1]), parts[2], parts[3], parts[4]
+            database.update_contact(contact_id, name, phone, email)
+            conn.sendall("OK".encode())
 
-    elif parts[0] == "exit":
-        conn.sendall("OK".encode())
+        elif parts[0] == "add_message":
+            contact_id = int(parts[1])
+            message_text = parts[2]
+            database.add_message(contact_id, message_text)
+            conn.sendall("OK".encode())
+
+        elif parts[0] == "get_messages":
+            contact_id = int(parts[1])
+            messages = database.get_messages_by_contact(contact_id)
+            conn.sendall(json.dumps(messages).encode())
+
+        elif parts[0] == "exit":
+            conn.sendall("OK".encode())
+            conn.close()
+            print("Сервер завершает работу...")
+            os._exit(0)
+
+        else:
+            conn.sendall("UNKNOWN_COMMAND".encode())
+
+    except Exception as e:
+        conn.sendall(f"ERROR: {str(e)}".encode())
+    finally:
         conn.close()
-        print("Сервер завершает работу...")
-        os._exit(0)
-
-    else:
-        conn.sendall("UNKNOWN_COMMAND".encode())
-
-    conn.close()
 
 def start_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

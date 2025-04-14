@@ -3,6 +3,7 @@ import sqlite3
 def connect_db():
     conn = sqlite3.connect("contacts.db")
     cursor = conn.cursor()
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS contacts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -11,6 +12,17 @@ def connect_db():
             email TEXT
         );
     """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            contact_id INTEGER NOT NULL,
+            message_text TEXT NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE CASCADE
+        );
+    """)
+
     conn.commit()
     return conn
 
@@ -48,9 +60,29 @@ def update_contact(contact_id, name, phone, email):
     conn = connect_db()
     cursor = conn.cursor()
     cursor.execute("""
-        UPDATE contacts
-        SET name = ?, phone = ?, email = ?
+        UPDATE contacts 
+        SET name = ?, phone = ?, email = ? 
         WHERE id = ?
     """, (name, phone, email, contact_id))
     conn.commit()
     conn.close()
+
+def add_message(contact_id, text):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO messages (contact_id, message_text) VALUES (?, ?)", (contact_id, text))
+    conn.commit()
+    conn.close()
+
+def get_messages_by_contact(contact_id):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT message_text, timestamp
+        FROM messages
+        WHERE contact_id = ?
+        ORDER BY timestamp DESC
+    """, (contact_id,))
+    result = cursor.fetchall()
+    conn.close()
+    return result
